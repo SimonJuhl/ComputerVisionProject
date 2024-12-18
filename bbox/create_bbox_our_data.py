@@ -58,6 +58,11 @@ images.sort(key=lambda x: datetime.strptime(
 
 # Annotation loop
 for img_file in images:
+    txt_file = os.path.join(output_dir, os.path.splitext(img_file)[0] + ".txt")
+    # If annotations already exist for image
+    if os.path.exists(txt_file):
+        continue
+
     img_path = os.path.join(image_dir, img_file)
     image = cv2.imread(img_path)
     if image is None:
@@ -76,6 +81,10 @@ for img_file in images:
         key = cv2.waitKey(0) & 0xFF
 
         if key == 13:  # Enter: Save annotations and move to next image
+            print(len(bounding_boxes))
+            if len(bounding_boxes) == 0:
+                print("yo")
+                break
             # Save bounding boxes to text file with same name as rgb image
             txt_file = os.path.join(output_dir, os.path.splitext(img_file)[0] + ".txt")
             with open(txt_file, "w") as f:
@@ -83,7 +92,8 @@ for img_file in images:
                     f.write(f"{bbox[0]} {bbox[1]} {bbox[2]} {bbox[3]}\n")
             break
 
-        elif key == ord('z'):  # Ctrl+Z: Undo last bounding box
+        elif key == 90 or key == 122:  # Z: Undo last bounding box
+            print("YO")
             if bounding_boxes:
                 bounding_boxes.pop()
                 image = temp_image.copy()  # Reset image
