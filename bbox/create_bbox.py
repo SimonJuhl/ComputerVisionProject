@@ -2,17 +2,15 @@ import cv2
 import os
 from datetime import datetime
 
-# Path to your directory containing RGB images
 image_dir = "../capturing/captured_frames"
 output_dir = "./annotations"
 os.makedirs(output_dir, exist_ok=True)
 
-# Globals for drawing bounding boxes
 drawing = False
 start_point = None
 bounding_boxes = []
 
-# Mouse callback for drawing bounding boxes
+# Draw bounding boxes
 def draw_rectangle(event, x, y, flags, param):
     global drawing, start_point, bounding_boxes, temp_image
 
@@ -66,7 +64,6 @@ for img_file in images:
     img_path = os.path.join(image_dir, img_file)
     image = cv2.imread(img_path)
     if image is None:
-        print(f"Error loading image {img_file}. Skipping...")
         continue
 
     temp_image = image.copy()
@@ -81,36 +78,21 @@ for img_file in images:
         key = cv2.waitKey(0) & 0xFF
 
         if key == 13:  # Enter: Save annotations and move to next image
-            print(len(bounding_boxes))
+            # If no bounding boxes don't create txt file
             if len(bounding_boxes) == 0:
-                print("yo")
                 break
             # Save bounding boxes to text file with same name as rgb image
             txt_file = os.path.join(output_dir, os.path.splitext(img_file)[0] + ".txt")
             with open(txt_file, "w") as f:
                 for bbox in bounding_boxes:
-                    f.write(f"{bbox[0]} {bbox[1]} {bbox[2]} {bbox[3]}\n")
+                    f.write(f"0 {bbox[0]} {bbox[1]} {bbox[2]} {bbox[3]}\n")
             break
 
         elif key == 90 or key == 122:  # Z: Undo last bounding box
-            print("YO")
             if bounding_boxes:
                 bounding_boxes.pop()
-                image = temp_image.copy()  # Reset image
-                for bbox in bounding_boxes:
-                    # Re-draw all bounding boxes
-                    x_center = bbox[0] * image.shape[1]
-                    y_center = bbox[1] * image.shape[0]
-                    width = bbox[2] * image.shape[1]
-                    height = bbox[3] * image.shape[0]
-                    x_min = int(x_center - width / 2)
-                    y_min = int(y_center - height / 2)
-                    x_max = int(x_center + width / 2)
-                    y_max = int(y_center + height / 2)
-                    cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
-                cv2.imshow("Annotator", image)
             else:
-                print("No bounding boxes to undo.")
+                print("No bounding boxes to undo")
 
         elif key == 27:  # ESC: Exit program
             print("Exiting...")

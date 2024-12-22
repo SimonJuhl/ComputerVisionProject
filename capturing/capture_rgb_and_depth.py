@@ -4,11 +4,9 @@ import os
 from datetime import datetime
 import numpy as np
 
-# Define output folder for saving images
 output_folder = "captured_frames"
 os.makedirs(output_folder, exist_ok=True)
 
-# Configure the pipeline for the Intel RealSense camera
 pipeline = rs.pipeline()
 config = rs.config()
 
@@ -19,18 +17,14 @@ config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 30)
 # Start the pipeline
 pipeline.start(config)
 
-print("Press SPACE to capture. ESC to exit.")
-
 try:
     while True:
         # Wait for frames (depth + color)
         frames = pipeline.wait_for_frames()
 
-        # Extract the color and depth frames
         color_frame = frames.get_color_frame()
         depth_frame = frames.get_depth_frame()
 
-        # Check if both frames are valid
         if not color_frame or not depth_frame:
             continue
 
@@ -41,7 +35,6 @@ try:
         # Make depth image a colormap
         depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
 
-        # Show live RGB and depth images
         cv2.imshow("RGB Stream", color_image)
         cv2.imshow("Depth Stream", depth_colormap)
 
@@ -52,7 +45,6 @@ try:
             print("Exiting...")
             break
         elif key == 32:  # SPACE key
-            # Generate file names w. timestamps
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S%f")[:-3]  # Accurate to milliseconds
             color_filename = os.path.join(output_folder, f"rgb_{timestamp}.png")
             depth_filename = os.path.join(output_folder, f"depth_{timestamp}.png")
