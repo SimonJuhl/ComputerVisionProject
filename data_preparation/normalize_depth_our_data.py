@@ -3,14 +3,14 @@ import numpy as np
 import os
 from scipy.spatial import KDTree
 
-# Precompute COLORMAP_JET RGB values and build a KDTree for efficient nearest-neighbor search
+# Precompute COLORMAP_JET RGB values and build a KDTree
 def create_reverse_colormap_jet():
     grayscale = np.arange(256, dtype=np.uint8).reshape(1, -1)
 
     # Apply COLORMAP_JET to get the corresponding RGB values
     colormap_jet = cv2.applyColorMap(grayscale, cv2.COLORMAP_JET).reshape(-1, 3)
 
-    # Build a KDTree for fast nearest-neighbor lookup
+    # Used for nearest-neighbor lookup
     kd_tree = KDTree(colormap_jet)
 
     return kd_tree, colormap_jet, np.arange(256, dtype=np.uint8)
@@ -43,7 +43,6 @@ def process_all_depth_images(input_folder, output_folder):
 
             colormap_image = cv2.imread(input_path, cv2.IMREAD_COLOR)
             if colormap_image is None:
-                print(f"Failed to load {file_name}. Skipping...")
                 continue
 
             # Convert COLORMAP_JET image to grayscale

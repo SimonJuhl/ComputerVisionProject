@@ -11,9 +11,6 @@ os.makedirs(output_dir, exist_ok=True)
 # Classes to include (only pedestrians for YOLO class 0)
 included_classes = {"person": 0}  # Map labels to YOLO class IDs
 
-print(f"Total JSON files in bbox2d: {len(os.listdir(bbox_dir))}")
-print(f"Total image files in rgb: {len(os.listdir(image_dir))}")
-
 # Process each bbox JSON file
 for bbox_file in os.listdir(bbox_dir):
     if bbox_file.endswith(".json"):
